@@ -1,4 +1,4 @@
-package com.sidroded.url_shortener.auth;
+package com.example.auth;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

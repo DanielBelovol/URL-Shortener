@@ -1,5 +1,6 @@
-package com.sidroded.url_shortener.url_profile;
+package com.example.url_profile;
 
+import com.example.user.User;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -9,29 +10,37 @@ import java.util.Random;
 @Data
 @Entity
 public class UrlProfile {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column
     private String fullUrl;
+
     @Column
     private String shortUrl;
+
     @Column
     private LocalDateTime startDate;
+
     @Column
     private LocalDateTime endDate;
+
     @Column
     private int views;
-    @Column
-    private Long userId;
 
-    public UrlProfile(String fullUrl, Long userId) {
+    @ManyToOne
+    @JoinColumn(name = "user_id") // Виправлено mappedBy на user_id
+    private User user;
+
+    public UrlProfile(String fullUrl, User user) {
         this.fullUrl = fullUrl;
         this.shortUrl = generateShortUrl();
         this.views = 0;
         this.startDate = LocalDateTime.now();
         this.endDate = this.startDate.plusMonths(1);
-        this.userId = userId;
+        this.user = user;
     }
 
     public UrlProfile() {
@@ -51,4 +60,3 @@ public class UrlProfile {
         return shortUrl.toString();
     }
 }
-

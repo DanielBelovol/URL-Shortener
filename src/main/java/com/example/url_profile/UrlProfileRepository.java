@@ -1,4 +1,4 @@
-package com.sidroded.url_shortener.url_profile;
+package com.example.url_profile;
 
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;

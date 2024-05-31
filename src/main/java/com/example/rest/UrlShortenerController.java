@@ -1,9 +1,11 @@
-package com.sidroded.url_shortener.rest;
+package com.example.rest;
 
-import com.sidroded.url_shortener.url_profile.UrlProfile;
-import com.sidroded.url_shortener.url_profile.UrlProfileDTO;
-import com.sidroded.url_shortener.url_profile.UrlProfileRequest;
-import com.sidroded.url_shortener.url_profile.UrlProfileService;
+import com.example.url_profile.UrlProfile;
+import com.example.url_profile.UrlProfileDTO;
+import com.example.url_profile.UrlProfileRequest;
+import com.example.url_profile.UrlProfileService;
+import com.example.user.User;
+import com.example.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
@@ -15,6 +17,8 @@ public class UrlShortenerController {
 
     @Autowired
     private UrlProfileService urlProfileService;
+    @Autowired
+    private UserRepository userRepository;
 
     @GetMapping("/v1/url_profile/{id}")
     public UrlProfileDTO getUrlProfile(@PathVariable Long id) {
@@ -28,8 +32,12 @@ public class UrlShortenerController {
 
     @PostMapping("/v1/")
     public UrlProfile addUrlProfile(@RequestBody UrlProfileRequest urlProfileRequest) {
-        UrlProfile urlProfile = new UrlProfile(urlProfileRequest.getFullUrl(), urlProfileRequest.getUserId());
+        User user = userRepository.findById(urlProfileRequest.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        UrlProfile urlProfile = new UrlProfile(urlProfileRequest.getFullUrl(), user);
         urlProfileService.save(urlProfile);
+
         return urlProfile;
     }
 

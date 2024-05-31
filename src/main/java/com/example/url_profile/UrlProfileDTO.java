@@ -1,4 +1,4 @@
-package com.sidroded.url_shortener.url_profile;
+package com.example.url_profile;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
