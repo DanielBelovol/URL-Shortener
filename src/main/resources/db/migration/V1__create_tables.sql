@@ -8,7 +8,7 @@ CREATE TABLE roles (
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(255) NOT NULL,
-    lastname VARCHAR(255) NOT NULL,
+    lastname VARCHAR(255),
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -29,8 +29,8 @@ CREATE TABLE url (
 CREATE TABLE url_views (
     id SERIAL PRIMARY KEY,
     url_id INTEGER REFERENCES url(id),
-    ip_address VARCHAR(255) NOT NULL,
-    os_system VARCHAR(255) NOT NULL,
+    ip_address VARCHAR(255),
+    os_system VARCHAR(255),
     browser VARCHAR(255) NOT NULL,
     referer TEXT
 );
