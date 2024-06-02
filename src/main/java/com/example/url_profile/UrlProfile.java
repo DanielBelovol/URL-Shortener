@@ -1,5 +1,6 @@
-package com.sidroded.url_shortener.url_profile;
+package com.example.url_profile;
 
+import com.example.user.User;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -8,35 +9,41 @@ import java.util.Random;
 
 @Data
 @Entity
+@Table(name = "url")
 public class UrlProfile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column
-    private String fullUrl;
-    @Column
+
+    @Column(name = "long_url")
+    private String longUrl;
+
+    @Column(name = "short_url")
     private String shortUrl;
-    @Column
-    private LocalDateTime startDate;
-    @Column
-    private LocalDateTime endDate;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "valid_to")
+    private LocalDateTime validTo;
+
     @Column
     private int views;
-    @Column
-    private Long userId;
 
-    public UrlProfile(String fullUrl, Long userId) {
-        this.fullUrl = fullUrl;
+    @ManyToOne
+    @JoinColumn(name = "created_by")
+    private User user;
+
+    public UrlProfile(String longUrl, User user) {
+        this.longUrl = longUrl;
         this.shortUrl = generateShortUrl();
         this.views = 0;
-        this.startDate = LocalDateTime.now();
-        this.endDate = this.startDate.plusMonths(1);
-        this.userId = userId;
+        this.createdAt = LocalDateTime.now();
+        this.validTo = this.createdAt.plusMonths(1);
+        this.user = user;
     }
 
-    public UrlProfile() {
-
-    }
+    public UrlProfile() {}
 
     private String generateShortUrl() {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
@@ -51,4 +58,3 @@ public class UrlProfile {
         return shortUrl.toString();
     }
 }
-

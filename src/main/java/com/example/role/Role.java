@@ -1,17 +1,16 @@
-package com.sidroded.url_shortener.user;
+package com.example.role;
 
 import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
 @Entity
-public class User {
-
+@Table(name = "roles")
+public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column
-    private String login;
-    @Column
-    private String password;
+
+    @Column(name = "name")
+    private String name;
 }

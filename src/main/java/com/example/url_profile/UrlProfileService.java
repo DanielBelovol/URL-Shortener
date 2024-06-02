@@ -1,4 +1,4 @@
-package com.sidroded.url_shortener.url_profile;
+package com.example.url_profile;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +27,8 @@ public class UrlProfileService {
     }
 
     public UrlProfileDTO getById(Long id) {
-        UrlProfile urlProfile = urlProfileRepository.getReferenceById(id);
-        return convertUrlProfileEntityToDto(urlProfile);
+        UrlProfile urlProfile = urlProfileRepository.findById(id).orElse(null);
+        return urlProfile != null ? convertUrlProfileEntityToDto(urlProfile) : null;
     }
 
     public UrlProfile getByShortUrl(String shortUrl) {
@@ -40,6 +40,6 @@ public class UrlProfileService {
         urlProfileRepository.deleteUrlProfileByShortUrl(shortUrl);
     }
     public UrlProfileDTO convertUrlProfileEntityToDto(UrlProfile urlProfile) {
-        return new UrlProfileDTO(urlProfile.getId(), urlProfile.getFullUrl(), urlProfile.getShortUrl(), urlProfile.getStartDate(), urlProfile.getEndDate(), urlProfile.getViews(), urlProfile.getUserId());
+        return new UrlProfileDTO(urlProfile.getId(), urlProfile.getLongUrl(), urlProfile.getShortUrl(), urlProfile.getCreatedAt(), urlProfile.getValidTo(), urlProfile.getViews(), urlProfile.getUser() != null ? urlProfile.getUser().getId() : null);
     }
 }
