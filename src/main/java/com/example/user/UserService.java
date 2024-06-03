@@ -1,5 +1,6 @@
 package com.example.user;
 
+import com.example.exceptions.UserNotFoundException;
 import com.example.role.Role;
 import com.example.role.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,17 +10,23 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.regex.Pattern;
 
+// todo
+// add mapping, dtos
+
 @Service
 public class UserService {
 
-    @Autowired
     private UserRepository userRepository;
-
-    @Autowired
     private RoleService roleService;
 
-    @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    public UserService(UserRepository userRepository, RoleService roleService, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.roleService = roleService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public User registerUser(RegisterRequest registerRequest) {
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
@@ -52,5 +59,10 @@ public class UserService {
     private boolean isValidPassword(String password) {
         String passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$";
         return Pattern.matches(passwordPattern, password);
+    }
+
+    public User getUserById(long id) throws UserNotFoundException{
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
     }
 }

@@ -15,6 +15,5 @@ public class UrlProfileDTO {
     private String shortUrl;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    private int views;
     private Long userId;
 }

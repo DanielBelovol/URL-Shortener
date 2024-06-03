@@ -1,11 +1,14 @@
 package com.example.url_profile;
 
+import com.example.url_view.UrlView;
 import com.example.user.User;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 @Data
 @Entity
@@ -27,34 +30,20 @@ public class UrlProfile {
     @Column(name = "valid_to")
     private LocalDateTime validTo;
 
-    @Column
-    private int views;
-
     @ManyToOne
     @JoinColumn(name = "created_by")
     private User user;
 
+    @OneToMany(mappedBy = "urlProfile")
+    private Set<UrlView> urlViews = new HashSet<>();
+
+    public UrlProfile() {}
+
     public UrlProfile(String longUrl, User user) {
         this.longUrl = longUrl;
-        this.shortUrl = generateShortUrl();
-        this.views = 0;
         this.createdAt = LocalDateTime.now();
         this.validTo = this.createdAt.plusMonths(1);
         this.user = user;
     }
 
-    public UrlProfile() {}
-
-    private String generateShortUrl() {
-        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
-        Random random = new Random();
-        StringBuilder shortUrl = new StringBuilder();
-
-        for (int i = 0; i < 8; i++) {
-            int index = random.nextInt(characters.length());
-            shortUrl.append(characters.charAt(index));
-        }
-
-        return shortUrl.toString();
-    }
 }
