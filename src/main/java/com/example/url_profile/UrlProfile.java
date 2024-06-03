@@ -30,6 +30,9 @@ public class UrlProfile {
     @Column
     private int views;
 
+    @Column(name = "is_locked")
+    private boolean isLocked;
+
     @ManyToOne
     @JoinColumn(name = "created_by")
     private User user;
@@ -39,7 +42,7 @@ public class UrlProfile {
         this.shortUrl = generateShortUrl();
         this.views = 0;
         this.createdAt = LocalDateTime.now();
-        this.validTo = this.createdAt.plusMonths(1);
+        this.validTo = this.createdAt.plusMinutes(5);
         this.user = user;
     }
 

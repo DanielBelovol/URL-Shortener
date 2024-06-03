@@ -21,6 +21,8 @@ CREATE TABLE url (
     long_url TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by INTEGER REFERENCES users(id),
+    is_locked BOOLEAN NOT NULL DEFAULT FALSE,
+    views INTEGER DEFAULT 0,
     valid_to TIMESTAMP
 );
 
