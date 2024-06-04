@@ -5,9 +5,11 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "url_views")
 public class UrlView {
@@ -24,12 +26,4 @@ public class UrlView {
     private String osSystem;
     private String browser;
     private String referer;
-
-    public UrlView(UrlProfile urlProfile, String ipAddress, String osSystem, String browser, String referer) {
-        this.urlProfile = urlProfile;
-        this.ipAddress = ipAddress;
-        this.osSystem = osSystem;
-        this.browser = browser;
-        this.referer = referer;
-    }
 }
