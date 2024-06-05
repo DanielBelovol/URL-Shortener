@@ -17,7 +17,7 @@ public class UrlView {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @ManyToOne
-    @JoinColumn(name = "url_id")
+    @JoinColumn(name = "url_id", nullable = false)
     private UrlProfile urlProfile;
 
     @Column(name = "ip_address")

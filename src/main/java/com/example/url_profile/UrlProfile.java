@@ -38,6 +38,6 @@ public class UrlProfile {
     @JoinColumn(name = "created_by")
     private User user;
 
-    @OneToMany(mappedBy = "urlProfile")
+    @OneToMany(mappedBy = "urlProfile", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UrlView> urlViews = new HashSet<>();
 }

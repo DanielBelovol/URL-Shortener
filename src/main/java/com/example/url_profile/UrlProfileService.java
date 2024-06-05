@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+// todo
+// create user dto to return not full user
+
 @Service
 public class UrlProfileService {
     private UrlProfileRepository urlProfileRepository;
@@ -26,6 +29,7 @@ public class UrlProfileService {
 
     public UrlProfileResponse createUrl(UrlProfileDto dto, User user) {
         UrlProfile urlProfile = urlProfileMapper.fromUrlProfileDtoToEntity(dto);
+
 
         urlProfile.setShortUrl(generateUniqueShortUrl());
         urlProfile.setUser(user);
@@ -44,10 +48,10 @@ public class UrlProfileService {
                 .collect(Collectors.toList());
     }
 
-    public UrlProfileResponse getUrlById(Long id) throws UrlNotFoundException {
-        return urlProfileMapper.fromUrlProfileEntityToResponse(
-                urlProfileRepository.findById(id)
-                        .orElseThrow(() -> new UrlNotFoundException(id)));
+    public UrlProfileResponse getUrlById(long id) throws UrlNotFoundException {
+        UrlProfile urlProfile = urlProfileRepository.findById(id)
+                .orElseThrow(() -> new UrlNotFoundException(id));
+        return urlProfileMapper.fromUrlProfileEntityToResponse(urlProfile);
     }
 
     public UrlProfileResponse activateExpiredUrl(long id) throws UrlNotFoundException{
@@ -66,10 +70,11 @@ public class UrlProfileService {
         urlProfileRepository.deleteUrlProfileByShortUrl(shortUrl);
     }
 
-    public boolean deleteById(long id){
-        urlProfileRepository.deleteById(id);
-        return true;
-    }
+//    @Transactional
+//    public boolean deleteById(long id){
+//        urlProfileRepository.deleteById(id);
+//        return true;
+//    }
 
     private String generateUniqueShortUrl() {
         String shortUrl;
