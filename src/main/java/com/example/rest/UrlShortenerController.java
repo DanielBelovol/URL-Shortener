@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("api/v1/url_profiles")
+@RequestMapping("v1/urls")
 public class UrlShortenerController {
     private UrlProfileService urlProfileService;
     private UserService userService;
@@ -70,13 +70,13 @@ public class UrlShortenerController {
                 .body(urlProfileService.activateExpiredUrl(id));
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<UrlProfileResponse> getUrlProfile(@PathVariable long id)
-//            throws UrlNotFoundException {
-//        return ResponseEntity
-//                .ok()
-//                .body(urlProfileService.getUrlById(id));
-//    }
+    @GetMapping("/{id}")
+    public ResponseEntity<UrlProfileResponse> getUrlProfile(@PathVariable long id)
+            throws UrlNotFoundException {
+        return ResponseEntity
+                .ok()
+                .body(urlProfileService.getUrlById(id));
+    }
 
     @GetMapping("")
     public ResponseEntity<List<UrlProfileView>> getAllUrlProfiles() {
@@ -120,7 +120,7 @@ public class UrlShortenerController {
                 .body(urlProfileViews);
     }
 
-    @GetMapping("/{shortUrl}")
+    @GetMapping("/redir/{shortUrl}")
     public RedirectView redirectToFullUrl(@PathVariable String shortUrl,
                                           HttpServletRequest request,
                                           @RequestHeader("User-Agent") String userAgent)
@@ -146,14 +146,6 @@ public class UrlShortenerController {
                 .ok()
                 .body("Deleted successfully");
     }
-
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<?> deleteById(@PathVariable long id){
-//        urlProfileService.deleteById(id);
-//        return ResponseEntity
-//                .ok()
-//                .body("Deleted successfully");
-//    }
 
     private String extractOsFromUserAgent(String userAgent) {
         if (userAgent.toLowerCase().contains("windows")) {

@@ -69,13 +69,6 @@ public class UrlProfileService {
     public void deleteByShortUrl(String shortUrl) {
         urlProfileRepository.deleteUrlProfileByShortUrl(shortUrl);
     }
-
-//    @Transactional
-//    public boolean deleteById(long id){
-//        urlProfileRepository.deleteById(id);
-//        return true;
-//    }
-
     private String generateUniqueShortUrl() {
         String shortUrl;
         do {
