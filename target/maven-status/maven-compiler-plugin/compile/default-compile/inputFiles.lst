@@ -1,3 +1,9 @@
-C:\Users\Daniil\Documents\GitHub\URL Shortener\src\main\java\com\sidroded\url_shortener\database\UrlProfile.java
-C:\Users\Daniil\Documents\GitHub\URL Shortener\src\main\java\com\sidroded\url_shortener\rest\UrlShortenerController.java
-C:\Users\Daniil\Documents\GitHub\URL Shortener\src\main\java\com\sidroded\url_shortener\UrlShortenerApplication.java
+C:\Users\User\Desktop\GitRepo\URL-Shortener\src\main\java\com\sidroded\url_shortener\auth\SecurityConfiguration.java
+C:\Users\User\Desktop\GitRepo\URL-Shortener\src\main\java\com\sidroded\url_shortener\rest\UrlShortenerController.java
+C:\Users\User\Desktop\GitRepo\URL-Shortener\src\main\java\com\sidroded\url_shortener\url_profile\UrlProfile.java
+C:\Users\User\Desktop\GitRepo\URL-Shortener\src\main\java\com\sidroded\url_shortener\url_profile\UrlProfileDTO.java
+C:\Users\User\Desktop\GitRepo\URL-Shortener\src\main\java\com\sidroded\url_shortener\url_profile\UrlProfileRepository.java
+C:\Users\User\Desktop\GitRepo\URL-Shortener\src\main\java\com\sidroded\url_shortener\url_profile\UrlProfileRequest.java
+C:\Users\User\Desktop\GitRepo\URL-Shortener\src\main\java\com\sidroded\url_shortener\url_profile\UrlProfileService.java
+C:\Users\User\Desktop\GitRepo\URL-Shortener\src\main\java\com\sidroded\url_shortener\UrlShortenerApplication.java
+C:\Users\User\Desktop\GitRepo\URL-Shortener\src\main\java\com\sidroded\url_shortener\user\User.java

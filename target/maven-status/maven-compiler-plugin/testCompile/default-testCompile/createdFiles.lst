@@ -1,1 +1,3 @@
+com\sidroded\url_shortener\rest\UrlShortenerControllerTest.class
 com\sidroded\url_shortener\UrlShortenerApplicationTests.class
+com\sidroded\url_shortener\auth\SecurityConfigurationTest.class

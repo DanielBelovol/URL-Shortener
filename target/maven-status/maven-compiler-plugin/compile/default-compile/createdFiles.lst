@@ -1,0 +1,9 @@
+com\sidroded\url_shortener\user\User.class
+com\sidroded\url_shortener\url_profile\UrlProfile.class
+com\sidroded\url_shortener\url_profile\UrlProfileService.class
+com\sidroded\url_shortener\url_profile\UrlProfileRepository.class
+com\sidroded\url_shortener\UrlShortenerApplication.class
+com\sidroded\url_shortener\rest\UrlShortenerController.class
+com\sidroded\url_shortener\auth\SecurityConfiguration.class
+com\sidroded\url_shortener\url_profile\UrlProfileRequest.class
+com\sidroded\url_shortener\url_profile\UrlProfileDTO.class
