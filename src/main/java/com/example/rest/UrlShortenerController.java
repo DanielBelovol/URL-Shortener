@@ -1,11 +1,18 @@
 package com.example.rest;
 
+import com.example.data.url_profile.UrlProfileDto;
+import com.example.data.url_profile.UrlProfileRequest;
+import com.example.data.url_profile.UrlProfileResponse;
+import com.example.data.url_profile_views.UrlProfileView;
+import com.example.data.url_view.UrlViewDto;
+import com.example.exceptions.UrlExpiredException;
+import com.example.exceptions.UrlNotFoundException;
 import com.example.exceptions.UserNotFoundException;
-import com.example.url_profile.*;
-import com.example.url_view.UrlView;
+import com.example.url_profile.UrlProfileService;
+import com.example.url_profile.UrlProfileValidationService;
+import com.example.url_view.UrlViewMapper;
 import com.example.url_view.UrlViewService;
 import com.example.user.User;
-
 import com.example.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,93 +20,127 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-
-
-// todo
-// change return types to ResponseEntity
-// + mapping
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("api/v1/url_profiles")
+@RequestMapping("v1/urls")
 public class UrlShortenerController {
     private UrlProfileService urlProfileService;
     private UserService userService;
     private UrlProfileValidationService urlProfileValidationService;
     private UrlViewService urlViewService;
+    private UrlViewMapper urlViewMapper;
 
     @Autowired
-    public UrlShortenerController(UrlProfileService urlProfileService, UserService userService, UrlProfileValidationService urlProfileValidationService, UrlViewService urlViewService) {
+    public UrlShortenerController(UrlProfileService urlProfileService, UserService userService, UrlProfileValidationService urlProfileValidationService, UrlViewService urlViewService, UrlViewMapper urlViewMapper) {
         this.urlProfileService = urlProfileService;
         this.userService = userService;
         this.urlProfileValidationService = urlProfileValidationService;
         this.urlViewService = urlViewService;
+        this.urlViewMapper = urlViewMapper;
     }
 
     @PostMapping("")
-    public ResponseEntity<?> addUrlProfile(@RequestBody UrlProfileRequest urlProfileRequest)
+    public ResponseEntity<?> createUrlProfile(@RequestBody UrlProfileRequest urlProfileRequest)
             throws UserNotFoundException {
         if (!urlProfileValidationService.isValidURL(urlProfileRequest.getFullUrl())) {
             return ResponseEntity.badRequest().body("Invalid URL");
         }
 
-        User user = userService.getUserById(urlProfileRequest.getUserId());
+        LocalDateTime now = LocalDateTime.now();
 
-        UrlProfile urlProfile = new UrlProfile(urlProfileRequest.getFullUrl(), user);
-        urlProfileService.save(urlProfile);
+        UrlProfileDto dto = new UrlProfileDto(urlProfileRequest.getFullUrl(), null, now, now.plusMonths(1), urlProfileRequest.getUserId());
+
+        User user = userService.getUserById(dto.getUserId());
+
         return ResponseEntity
                 .status(201)
-                .body(urlProfile);
+                .body(urlProfileService.createUrl(dto, user));
     }
 
-    @PutMapping("")
-    public ResponseEntity<?> activateExpiredUrl(@RequestBody long id){
-        urlProfileService.activateExpiredUrl(id);
-
+    @PutMapping("/{id}")
+    public ResponseEntity<?> activateExpiredUrl(@PathVariable long id)
+            throws UrlNotFoundException {
         return ResponseEntity
                 .ok()
-                .body("Url was activated");
+                .body(urlProfileService.activateExpiredUrl(id));
     }
 
     @GetMapping("/{id}")
-    public UrlProfileDTO getUrlProfile(@PathVariable Long id) {
-        return urlProfileService.getById(id);
+    public ResponseEntity<UrlProfileResponse> getUrlProfile(@PathVariable long id)
+            throws UrlNotFoundException {
+        return ResponseEntity
+                .ok()
+                .body(urlProfileService.getUrlById(id));
     }
 
     @GetMapping("")
-    public List<UrlProfile> getAllUrlProfiles() {
-        return urlProfileService.getAllUrls();
+    public ResponseEntity<List<UrlProfileView>> getAllUrlProfiles() {
+        List<UrlProfileResponse> urlProfileResponses = urlProfileService.getAllUrls();
+        List<UrlProfileView> urlProfileViews = new ArrayList<>();
+
+        for(UrlProfileResponse urlProfileResponse : urlProfileResponses){
+            urlProfileViews.add(new UrlProfileView(
+                    urlProfileResponse.getLongUrl(),
+                    urlProfileResponse.getShortUrl(),
+                    urlProfileResponse.getCreatedAt(),
+                    urlProfileResponse.getValidTo(),
+                    urlProfileResponse.getUser().getUsername(),
+                    urlViewService.getCountOfRedirectsForUrl(urlProfileResponse.getId()),
+                    urlViewService.getViewsForUrl(urlProfileResponse.getId()).stream().map(urlViewMapper::fromUrlViewResponseToDto).collect(Collectors.toList())));
+        }
+
+        return ResponseEntity
+                .ok()
+                .body(urlProfileViews);
     }
 
     @GetMapping("/active")
-    public ResponseEntity<List<UrlProfile>> getAllActiveUrls(){
-        return ResponseEntity.ok().body(urlProfileService.getAllActiveUrls());
+    public ResponseEntity<List<UrlProfileView>> getAllActiveUrls() {
+        List<UrlProfileResponse> urlProfileResponses = urlProfileService.getAllActiveUrls();
+        List<UrlProfileView> urlProfileViews = new ArrayList<>();
+
+        for(UrlProfileResponse urlProfileResponse : urlProfileResponses){
+            urlProfileViews.add(new UrlProfileView(
+                    urlProfileResponse.getLongUrl(),
+                    urlProfileResponse.getShortUrl(),
+                    urlProfileResponse.getCreatedAt(),
+                    urlProfileResponse.getValidTo(),
+                    urlProfileResponse.getUser().getUsername(),
+                    urlViewService.getCountOfRedirectsForUrl(urlProfileResponse.getId()),
+                    urlViewService.getViewsForUrl(urlProfileResponse.getId()).stream().map(urlViewMapper::fromUrlViewResponseToDto).collect(Collectors.toList())));
+        }
+
+        return ResponseEntity
+                .ok()
+                .body(urlProfileViews);
     }
 
-    @GetMapping("/{shortUrl}")
+    @GetMapping("/redir/{shortUrl}")
     public RedirectView redirectToFullUrl(@PathVariable String shortUrl,
                                           HttpServletRequest request,
-                                          @RequestHeader("User-Agent") String userAgent) {
-        UrlProfile urlProfile = urlProfileService.getByShortUrl(shortUrl);
+                                          @RequestHeader("User-Agent") String userAgent)
+            throws UrlExpiredException {
+        UrlProfileResponse urlProfileResponse = urlProfileService.getByShortUrl(shortUrl);
+
+        if(urlProfileResponse.getValidTo().isBefore(LocalDateTime.now())) throw new UrlExpiredException();
 
         String ipAddress = request.getRemoteAddr();
         String os = extractOsFromUserAgent(userAgent);
         String browser = extractBrowserFromUserAgent(userAgent);
 
-        UrlView urlView = new UrlView(urlProfile, ipAddress, os, browser, "");
-        urlViewService.saveUrlView(urlView);
+        UrlViewDto dto = new UrlViewDto(ipAddress, os, browser, "");
+        urlViewService.saveUrlView(dto, urlProfileResponse);
 
-        return new RedirectView(urlProfile.getLongUrl());
+        return new RedirectView(urlProfileResponse.getLongUrl());
     }
 
     @DeleteMapping("/{shortUrl}")
-    public void deleteByUrl(@PathVariable String shortUrl) {
+    public ResponseEntity<?> deleteByUrl(@PathVariable String shortUrl) {
         urlProfileService.deleteByShortUrl(shortUrl);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteById(@PathVariable long id){
-        urlProfileService.deleteById(id);
         return ResponseEntity
                 .ok()
                 .body("Deleted successfully");
