@@ -5,15 +5,14 @@ import com.example.data.url_profile.UrlProfileRequest;
 import com.example.data.url_profile.UrlProfileResponse;
 import com.example.data.url_profile_views.UrlProfileView;
 import com.example.data.url_view.UrlViewDto;
-import com.example.data.url_view.UrlViewResponse;
 import com.example.exceptions.UrlExpiredException;
 import com.example.exceptions.UrlNotFoundException;
 import com.example.exceptions.UserNotFoundException;
-import com.example.url_profile.*;
+import com.example.url_profile.UrlProfileService;
+import com.example.url_profile.UrlProfileValidationService;
 import com.example.url_view.UrlViewMapper;
 import com.example.url_view.UrlViewService;
 import com.example.user.User;
-
 import com.example.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
