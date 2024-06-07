@@ -37,8 +37,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/V1/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/V1/user/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/*").permitAll()
+                        .requestMatchers("/V1/urls/redir/**").permitAll()
                         .requestMatchers("/api/V1/link/**").authenticated()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
+                        .requestMatchers("/V1/urls/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(ses -> ses.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -46,6 +48,7 @@ public class SecurityConfig {
                         UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
+
 
     @Bean
     public AuthenticationManager authenticationManager()

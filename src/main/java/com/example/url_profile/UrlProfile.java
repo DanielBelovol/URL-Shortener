@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
 
 @Data
@@ -40,4 +39,5 @@ public class UrlProfile {
 
     @OneToMany(mappedBy = "urlProfile", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UrlView> urlViews = new HashSet<>();
+
 }
