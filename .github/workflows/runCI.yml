@@ -31,7 +31,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '17'
-          distribution: 'adopt'
+          distribution: 'adopt '
 
       - name: Build with Maven (dev)
         run: mvn clean install -P dev
