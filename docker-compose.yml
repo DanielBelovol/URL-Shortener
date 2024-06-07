@@ -1,0 +1,20 @@
+version: "3.8"
+services:
+  url_shortener:
+    build: .
+    container_name: url_shortener
+    ports:
+      - target: 9990
+        published: 9990
+    depends_on:
+      - url_shortener-db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:2024/url_shortener
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+  url_shortener-db:
+    image: postgres
+    container_name: url_shortener-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
