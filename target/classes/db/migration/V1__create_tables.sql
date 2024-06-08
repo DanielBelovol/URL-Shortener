@@ -14,7 +14,6 @@ CREATE TABLE users (
     role_id INTEGER REFERENCES roles(id)
 );
 
-
 CREATE TABLE url (
     id SERIAL PRIMARY KEY,
     short_url VARCHAR(255) NOT NULL UNIQUE,

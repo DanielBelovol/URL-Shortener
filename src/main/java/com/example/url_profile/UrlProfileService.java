@@ -34,9 +34,12 @@ public class UrlProfileService {
         urlProfile.setShortUrl(generateUniqueShortUrl());
         urlProfile.setUser(user);
 
+        user.getUrls().add(urlProfile);
+
         return urlProfileMapper.fromUrlProfileEntityToResponse(urlProfileRepository.save(urlProfile));
     }
-    public List<UrlProfileResponse> getAllActiveUrls(){
+
+    public List<UrlProfileResponse> getAllActiveUrls() {
         return urlProfileRepository.getAllActiveUrls().stream()
                 .map(urlProfileMapper::fromUrlProfileEntityToResponse)
                 .collect(Collectors.toList());
@@ -54,7 +57,7 @@ public class UrlProfileService {
         return urlProfileMapper.fromUrlProfileEntityToResponse(urlProfile);
     }
 
-    public UrlProfileResponse activateExpiredUrl(long id) throws UrlNotFoundException{
+    public UrlProfileResponse activateExpiredUrl(long id) throws UrlNotFoundException {
         UrlProfile urlProfile = urlProfileRepository.findById(id).orElseThrow(() -> new UrlNotFoundException(id));
         urlProfile.setValidTo(LocalDateTime.now().plusMonths(1));
 
@@ -65,10 +68,15 @@ public class UrlProfileService {
         return urlProfileMapper.fromUrlProfileEntityToResponse(urlProfileRepository.findByShortUrl(shortUrl));
     }
 
+    public UrlProfile getUrlProfileByShortUrl(String shortUrl) {
+        return urlProfileRepository.findByShortUrl(shortUrl);
+    }
+
     @Transactional
     public void deleteByShortUrl(String shortUrl) {
         urlProfileRepository.deleteUrlProfileByShortUrl(shortUrl);
     }
+
     private String generateUniqueShortUrl() {
         String shortUrl;
         do {
