@@ -5,7 +5,6 @@ import com.example.auth.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -34,13 +33,6 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/V1/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/V1/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/V1/user/**").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/*").permitAll()
-                        .requestMatchers("/V1/urls/redir/**").permitAll()
-                        .requestMatchers("/api/V1/link/**").authenticated()
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
-                        .requestMatchers("/V1/urls/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(ses -> ses.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
