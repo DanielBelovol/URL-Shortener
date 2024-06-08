@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.SpringVersion;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,6 +34,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+
 @RequestMapping("/api/V1/admin")
 public class AdminModeratorController {
     private UrlProfileService urlProfileService;
@@ -52,6 +54,7 @@ public class AdminModeratorController {
         this.urlProfileUtil = urlProfileUtil;
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     @PostMapping("")
     public ResponseEntity<?> createUrlProfile(@RequestBody UrlProfileRequest urlProfileRequest)
             throws UserNotFoundException {
@@ -74,6 +77,7 @@ public class AdminModeratorController {
                 .body(urlProfileService.createUrl(dto, user));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     @PutMapping("/{id}")
     public ResponseEntity<?> activateExpiredUrl(@PathVariable long id) {
         try {
@@ -83,6 +87,7 @@ public class AdminModeratorController {
         }
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     @GetMapping("/{id}")
     public ResponseEntity<UrlProfileResponse> getUrlProfile(@PathVariable long id)
             throws UrlNotFoundException {
@@ -97,6 +102,7 @@ public class AdminModeratorController {
                 .body(urlProfileService.getUrlById(id));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     @GetMapping("/urls/userId/{userId}")
     public ResponseEntity<List<UrlProfileView>> getAllUserUrlProfiles(@PathVariable Long userId) {
         List<UrlProfileResponse> urlProfileResponses = urlProfileService.getAllUserUrls(userId);
@@ -119,6 +125,7 @@ public class AdminModeratorController {
                 .body(urlProfileViews);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     @GetMapping("/urls/active/{userId}")
     public ResponseEntity<List<UrlProfileView>> getAllUserActiveUrls(@PathVariable Long userID) {
         List<UrlProfileResponse> urlProfileResponses = urlProfileService.getAllUserActiveUrls(userID);
@@ -139,6 +146,8 @@ public class AdminModeratorController {
                 .ok()
                 .body(urlProfileViews);
     }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     @GetMapping("/active")
     public ResponseEntity<List<UrlProfileView>> getAllActiveUrls() {
         List<UrlProfileResponse> urlProfileResponses = urlProfileService.getAllActiveUrls();
@@ -159,6 +168,8 @@ public class AdminModeratorController {
                 .ok()
                 .body(urlProfileViews);
     }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     @GetMapping("")
     public ResponseEntity<List<UrlProfileView>> getAllUrls() {
         List<UrlProfileResponse> urlProfileResponses = urlProfileService.getAllActiveUrls();
@@ -202,6 +213,7 @@ public class AdminModeratorController {
         return new RedirectView(urlProfileResponse.getLongUrl());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{shortUrl}")
     public ResponseEntity<?> deleteByUrl(@PathVariable String shortUrl) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -218,6 +230,9 @@ public class AdminModeratorController {
         urlProfileService.deleteByShortUrl(shortUrl);
         return ResponseEntity.ok().body("Deleted successfully");
     }
+
+
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/deleteUser/userId/{userId}")
     public ResponseEntity<?> deleteUserById(@PathVariable Long userId)  {
         try {

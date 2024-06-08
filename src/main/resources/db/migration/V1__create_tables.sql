@@ -1,6 +1,6 @@
 CREATE TABLE roles (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
+    role_id SERIAL PRIMARY KEY,
+    role_name VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE users (
@@ -11,7 +11,6 @@ CREATE TABLE users (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     active BOOLEAN NOT NULL DEFAULT TRUE,
     locked BOOLEAN NOT NULL DEFAULT FALSE,
-    role_id INTEGER REFERENCES roles(id)
 );
 
 CREATE TABLE url (
@@ -21,6 +20,13 @@ CREATE TABLE url (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by INTEGER REFERENCES users(id),
     valid_to TIMESTAMP
+);
+CREATE TABLE user_roles (
+    user_id INT,
+    role_id INT,
+    PRIMARY KEY (user_id, role_id),
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),
+    FOREIGN KEY (role_id) REFERENCES Roles(role_id)
 );
 
 CREATE TABLE url_views (

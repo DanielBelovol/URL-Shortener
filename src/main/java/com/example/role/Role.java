@@ -13,31 +13,14 @@ import static com.example.role.Permission.*;
 
 @RequiredArgsConstructor
 public enum Role {
-    USER(Collections.EMPTY_SET),
-    ADMIN(Set.of(
-            ADMIN_READ,
-            ADMIN_UPDATE,
-            ADMIN_CREATE,
-            ADMIN_DELETE,
-            MODERATOR_READ,
-            MODERATOR_UPDATE,
-            MODERATOR_CREATE,
-            MODERATOR_DELETE
-    )),
-    MODERATOR(Set.of(
-            MODERATOR_READ,
-            MODERATOR_UPDATE,
-            MODERATOR_CREATE,
-            MODERATOR_DELETE
-            ));
+    USER(Set.of()),
+    ADMIN(Set.of(new SimpleGrantedAuthority("ROLE_ADMIN"))),
+    MODERATOR(Set.of(new SimpleGrantedAuthority("ROLE_MODERATOR")));
+
     @Getter
-    private final Set<Permission> permissions;
-    public List<SimpleGrantedAuthority> getAuthorities(){
-        var authorities = getPermissions()
-                .stream()
-                .map(permission -> new SimpleGrantedAuthority(permission.name()))
-                .collect(Collectors.toList());
-        authorities.add(new SimpleGrantedAuthority("ROLE_"+this.name()));
-        return authorities;
+    private final Set<SimpleGrantedAuthority> authorities;
+
+    public List<SimpleGrantedAuthority> getAuthorities() {
+        return authorities.stream().collect(Collectors.toList());
     }
 }

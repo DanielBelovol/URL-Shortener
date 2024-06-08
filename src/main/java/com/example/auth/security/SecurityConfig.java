@@ -16,6 +16,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static com.example.role.Role.ADMIN;
+import static com.example.role.Role.MODERATOR;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -33,6 +36,9 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/V1/auth/**").permitAll()
+                        .requestMatchers("/api/V1/admin/deleteUser/**").hasRole(ADMIN.name())
+                        .requestMatchers("/api/V1/admin/{shortUrl}").hasRole(ADMIN.name())
+                        .requestMatchers("/api/V1/admin/**").hasAnyRole(ADMIN.name(), MODERATOR.name())
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(ses -> ses.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
