@@ -36,6 +36,13 @@ public class UrlProfileService {
 
         return urlProfileMapper.fromUrlProfileEntityToResponse(urlProfileRepository.save(urlProfile));
     }
+    public boolean isUserUrlOwner(long urlId, String username) {
+        UrlProfile urlProfile = urlProfileRepository.findById(urlId).orElse(null);
+        if (urlProfile == null) {
+            return false;
+        }
+        return urlProfile.getUser().getUsername().equals(username);
+    }
 
     public List<UrlProfileResponse> getAllActiveUrls() {
         return urlProfileRepository.getAllActiveUrls().stream()

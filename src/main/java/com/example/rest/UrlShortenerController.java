@@ -55,6 +55,14 @@ public class UrlShortenerController {
         if (!urlProfileValidationService.isValidURL(urlProfileRequest.getFullUrl())) {
             return ResponseEntity.badRequest().body("Invalid URL");
         }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String username = userDetails.getUsername();
+        User userById = userService.getUserByUsername(username);
+
+        if (userById.getId()!=urlProfileRequest.getUserId() || userService.getUserById(urlProfileRequest.getUserId())==null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found or your id not equal id in request");
+        }
         LocalDateTime now = LocalDateTime.now();
 
         UrlProfileDto dto = new UrlProfileDto(urlProfileRequest.getFullUrl(), null, now, now.plusMonths(1), urlProfileRequest.getUserId());
@@ -67,23 +75,42 @@ public class UrlShortenerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> activateExpiredUrl(@PathVariable long id)
-            throws UrlNotFoundException {
-        return ResponseEntity
-                .ok()
-                .body(urlProfileService.activateExpiredUrl(id));
+    public ResponseEntity<?> activateExpiredUrl(@PathVariable long id) throws UrlNotFoundException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = null;
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            currentUsername = userDetails.getUsername();
+        }
+
+        if (urlProfileService.isUserUrlOwner(id, currentUsername)) {
+            return ResponseEntity.ok().body(urlProfileService.activateExpiredUrl(id));
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You are not allowed to activate this URL.");
+        }
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UrlProfileResponse> getUrlProfile(@PathVariable long id)
             throws UrlNotFoundException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String username = userDetails.getUsername();
+        User userById = userService.getUserByUsername(username);
+
+        UrlProfileResponse urlProfileResponse = urlProfileService.getUrlById(id);
+
+        if (urlProfileResponse == null || urlProfileResponse.getUser().getId() != userById.getId()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
         return ResponseEntity
                 .ok()
                 .body(urlProfileService.getUrlById(id));
     }
 
     @GetMapping("")
-    public ResponseEntity<List<UrlProfileView>> getAllUrlProfiles() {
+    public ResponseEntity<List<UrlProfileView>> getAllUserUrlProfiles() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String username = userDetails.getUsername();
@@ -110,7 +137,7 @@ public class UrlShortenerController {
     }
 
     @GetMapping("/active")
-    public ResponseEntity<List<UrlProfileView>> getAllActiveUrls() {
+    public ResponseEntity<List<UrlProfileView>> getAllUserActiveUrls() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String username = userDetails.getUsername();
@@ -135,26 +162,6 @@ public class UrlShortenerController {
                 .body(urlProfileViews);
     }
 
-//    @GetMapping("/active")
-//    public ResponseEntity<List<UrlProfileView>> getAllActiveUrls() {
-//        List<UrlProfileResponse> urlProfileResponses = urlProfileService.getAllActiveUrls();
-//        List<UrlProfileView> urlProfileViews = new ArrayList<>();
-//
-//        for(UrlProfileResponse urlProfileResponse : urlProfileResponses){
-//            urlProfileViews.add(new UrlProfileView(
-//                    urlProfileResponse.getLongUrl(),
-//                    urlProfileResponse.getShortUrl(),
-//                    urlProfileResponse.getCreatedAt(),
-//                    urlProfileResponse.getValidTo(),
-//                    urlProfileResponse.getUser().getUsername(),
-//                    urlViewService.getCountOfRedirectsForUrl(urlProfileResponse.getId()),
-//                    urlViewService.getViewsForUrl(urlProfileResponse.getId()).stream().map(urlViewMapper::fromUrlViewResponseToDto).collect(Collectors.toList())));
-//        }
-//
-//        return ResponseEntity
-//                .ok()
-//                .body(urlProfileViews);
-//    }
 
     @GetMapping("/redir/{shortUrl}")
     public RedirectView redirectToFullUrl(@PathVariable String shortUrl,
