@@ -1,3 +1,9 @@
-com\sidroded\url_shortener\rest\UrlShortenerControllerTest.class
-com\sidroded\url_shortener\UrlShortenerApplicationTests.class
-com\sidroded\url_shortener\auth\SecurityConfigurationTest.class
+com\example\url_view\UrlViewMapperTest.class
+com\example\url_view\UrlViewRepositoryTest.class
+com\example\url_profile\UrlProfileValidationServiceTest.class
+com\example\url_view\UrlViewServiceTest.class
+com\example\url_profile\UrlProfileServiceTest.class
+com\example\url_profile\UrlProfileRepositoryTest.class
+com\example\url_profile\UrlProfileUtilTest.class
+com\example\UrlShortenerApplicationTests.class
+com\example\url_profile\UrlProfileMapperTest.class
