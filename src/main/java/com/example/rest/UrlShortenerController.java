@@ -10,6 +10,7 @@ import com.example.exceptions.UrlNotFoundException;
 import com.example.exceptions.UserNotFoundException;
 import com.example.url_profile.UrlProfile;
 import com.example.url_profile.UrlProfileService;
+import com.example.url_profile.UrlProfileUtil;
 import com.example.url_profile.UrlProfileValidationService;
 import com.example.url_view.UrlViewMapper;
 import com.example.url_view.UrlViewService;
@@ -28,7 +29,6 @@ import org.springframework.web.servlet.view.RedirectView;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -39,14 +39,16 @@ public class UrlShortenerController {
     private UrlProfileValidationService urlProfileValidationService;
     private UrlViewService urlViewService;
     private UrlViewMapper urlViewMapper;
+    private UrlProfileUtil urlProfileUtil;
 
     @Autowired
-    public UrlShortenerController(UrlProfileService urlProfileService, UserService userService, UrlProfileValidationService urlProfileValidationService, UrlViewService urlViewService, UrlViewMapper urlViewMapper) {
+    public UrlShortenerController(UrlProfileService urlProfileService, UserService userService, UrlProfileValidationService urlProfileValidationService, UrlViewService urlViewService, UrlViewMapper urlViewMapper, UrlProfileUtil urlProfileUtil) {
         this.urlProfileService = urlProfileService;
         this.userService = userService;
         this.urlProfileValidationService = urlProfileValidationService;
         this.urlViewService = urlViewService;
         this.urlViewMapper = urlViewMapper;
+        this.urlProfileUtil = urlProfileUtil;
     }
 
     @PostMapping("")
@@ -101,7 +103,7 @@ public class UrlShortenerController {
         UrlProfileResponse urlProfileResponse = urlProfileService.getUrlById(id);
 
         if (urlProfileResponse == null || urlProfileResponse.getUser().getId() != userById.getId()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
         return ResponseEntity
@@ -173,8 +175,8 @@ public class UrlShortenerController {
         if(urlProfileResponse.getValidTo().isBefore(LocalDateTime.now())) throw new UrlExpiredException();
 
         String ipAddress = request.getRemoteAddr();
-        String os = extractOsFromUserAgent(userAgent);
-        String browser = extractBrowserFromUserAgent(userAgent);
+        String os = urlProfileUtil.extractOsFromUserAgent(userAgent);
+        String browser = urlProfileUtil.extractBrowserFromUserAgent(userAgent);
 
         UrlViewDto dto = new UrlViewDto(ipAddress, os, browser, "");
         urlViewService.saveUrlView(dto, urlProfileResponse);
@@ -197,39 +199,5 @@ public class UrlShortenerController {
 
         urlProfileService.deleteByShortUrl(shortUrl);
         return ResponseEntity.ok().body("Deleted successfully");
-    }
-
-    private String extractOsFromUserAgent(String userAgent) {
-        if (userAgent.toLowerCase().contains("windows")) {
-            return "Windows";
-        } else if (userAgent.toLowerCase().contains("mac")) {
-            return "Mac";
-        } else if (userAgent.toLowerCase().contains("x11")) {
-            return "Unix";
-        } else if (userAgent.toLowerCase().contains("android")) {
-            return "Android";
-        } else if (userAgent.toLowerCase().contains("iphone")) {
-            return "iPhone";
-        } else {
-            return "Unknown";
-        }
-    }
-
-    private String extractBrowserFromUserAgent(String userAgent) {
-        if (userAgent.contains("MSIE") || userAgent.contains("Trident")) {
-            return "Internet Explorer";
-        } else if (userAgent.contains("Edge")) {
-            return "Edge";
-        } else if (userAgent.contains("Firefox")) {
-            return "Firefox";
-        } else if (userAgent.contains("Chrome") && !userAgent.contains("Chromium")) {
-            return "Chrome";
-        } else if (userAgent.contains("Safari") && !userAgent.contains("Chrome")) {
-            return "Safari";
-        } else if (userAgent.contains("Opera") || userAgent.contains("OPR")) {
-            return "Opera";
-        } else {
-            return "Unknown";
-        }
     }
 }
