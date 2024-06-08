@@ -34,8 +34,6 @@ public class UrlProfileService {
         urlProfile.setShortUrl(generateUniqueShortUrl());
         urlProfile.setUser(user);
 
-        user.getUrls().add(urlProfile);
-
         return urlProfileMapper.fromUrlProfileEntityToResponse(urlProfileRepository.save(urlProfile));
     }
 
@@ -47,6 +45,16 @@ public class UrlProfileService {
 
     public List<UrlProfileResponse> getAllUrls() {
         return urlProfileRepository.findAll().stream()
+                .map(urlProfileMapper::fromUrlProfileEntityToResponse)
+                .collect(Collectors.toList());
+    }
+    public List<UrlProfileResponse> getAllUserActiveUrls(Long userId) {
+        return urlProfileRepository.findActiveUrlsByUserId(userId).stream()
+                .map(urlProfileMapper::fromUrlProfileEntityToResponse)
+                .collect(Collectors.toList());
+    }
+    public List<UrlProfileResponse> getAllUserUrls(Long userId) {
+        return urlProfileRepository.findAllUrlsByUserId(userId).stream()
                 .map(urlProfileMapper::fromUrlProfileEntityToResponse)
                 .collect(Collectors.toList());
     }

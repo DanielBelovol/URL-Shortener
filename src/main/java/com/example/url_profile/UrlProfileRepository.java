@@ -15,4 +15,10 @@ public interface UrlProfileRepository extends JpaRepository<UrlProfile, Long> {
 
     @Query("SELECT u FROM UrlProfile u WHERE u.validTo > CURRENT_TIMESTAMP")
     List<UrlProfile> getAllActiveUrls();
+
+    @Query("SELECT u FROM UrlProfile u WHERE u.user.id = :userId AND u.validTo > CURRENT_TIMESTAMP")
+    List<UrlProfile> findActiveUrlsByUserId(Long userId);
+
+    @Query("SELECT u FROM UrlProfile u WHERE u.user.id = :userId")
+    List<UrlProfile> findAllUrlsByUserId(Long userId);
 }

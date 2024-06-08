@@ -55,10 +55,6 @@ public class UrlShortenerController {
         if (!urlProfileValidationService.isValidURL(urlProfileRequest.getFullUrl())) {
             return ResponseEntity.badRequest().body("Invalid URL");
         }
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-//        String username = userDetails.getUsername();
-
         LocalDateTime now = LocalDateTime.now();
 
         UrlProfileDto dto = new UrlProfileDto(urlProfileRequest.getFullUrl(), null, now, now.plusMonths(1), urlProfileRequest.getUserId());
@@ -92,21 +88,19 @@ public class UrlShortenerController {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String username = userDetails.getUsername();
         User user = userService.getUserByUsername(username);
-        Set<UrlProfile> urls = user.getUrls();
 
+        List<UrlProfileResponse> urlProfileResponses = urlProfileService.getAllUserUrls(user.getId());
         List<UrlProfileView> urlProfileViews = new ArrayList<>();
-        for (UrlProfile urlProfile : urls) {
+
+        for (UrlProfileResponse urlProfileResponse : urlProfileResponses) {
             urlProfileViews.add(new UrlProfileView(
-                    urlProfile.getLongUrl(),
-                    urlProfile.getShortUrl(),
-                    urlProfile.getCreatedAt(),
-                    urlProfile.getValidTo(),
-                    urlProfile.getUser().getUsername(),
-                    urlViewService.getCountOfRedirectsForUrl(urlProfile.getId()),
-                    urlViewService.getViewsForUrl(urlProfile.getId())
-                            .stream()
-                            .map(urlViewMapper::fromUrlViewResponseToDto)
-                            .collect(Collectors.toList())
+                    urlProfileResponse.getLongUrl(),
+                    urlProfileResponse.getShortUrl(),
+                    urlProfileResponse.getCreatedAt(),
+                    urlProfileResponse.getValidTo(),
+                    urlProfileResponse.getUser().getUsername(),
+                    urlViewService.getCountOfRedirectsForUrl(urlProfileResponse.getId()),
+                    urlViewService.getViewsForUrl(urlProfileResponse.getId()).stream().map(urlViewMapper::fromUrlViewResponseToDto).collect(Collectors.toList())
             ));
         }
 
@@ -117,7 +111,12 @@ public class UrlShortenerController {
 
     @GetMapping("/active")
     public ResponseEntity<List<UrlProfileView>> getAllActiveUrls() {
-        List<UrlProfileResponse> urlProfileResponses = urlProfileService.getAllActiveUrls();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String username = userDetails.getUsername();
+        User user = userService.getUserByUsername(username);
+
+        List<UrlProfileResponse> urlProfileResponses = urlProfileService.getAllUserActiveUrls(user.getId());
         List<UrlProfileView> urlProfileViews = new ArrayList<>();
 
         for(UrlProfileResponse urlProfileResponse : urlProfileResponses){
@@ -135,6 +134,27 @@ public class UrlShortenerController {
                 .ok()
                 .body(urlProfileViews);
     }
+
+//    @GetMapping("/active")
+//    public ResponseEntity<List<UrlProfileView>> getAllActiveUrls() {
+//        List<UrlProfileResponse> urlProfileResponses = urlProfileService.getAllActiveUrls();
+//        List<UrlProfileView> urlProfileViews = new ArrayList<>();
+//
+//        for(UrlProfileResponse urlProfileResponse : urlProfileResponses){
+//            urlProfileViews.add(new UrlProfileView(
+//                    urlProfileResponse.getLongUrl(),
+//                    urlProfileResponse.getShortUrl(),
+//                    urlProfileResponse.getCreatedAt(),
+//                    urlProfileResponse.getValidTo(),
+//                    urlProfileResponse.getUser().getUsername(),
+//                    urlViewService.getCountOfRedirectsForUrl(urlProfileResponse.getId()),
+//                    urlViewService.getViewsForUrl(urlProfileResponse.getId()).stream().map(urlViewMapper::fromUrlViewResponseToDto).collect(Collectors.toList())));
+//        }
+//
+//        return ResponseEntity
+//                .ok()
+//                .body(urlProfileViews);
+//    }
 
     @GetMapping("/redir/{shortUrl}")
     public RedirectView redirectToFullUrl(@PathVariable String shortUrl,
@@ -163,14 +183,13 @@ public class UrlShortenerController {
         User user = userService.getUserByUsername(username);
 
         UrlProfile urlProfile = urlProfileService.getUrlProfileByShortUrl(shortUrl);
-        boolean isUserUrl = user.getUrls().stream().anyMatch(profile -> profile.getShortUrl().equals(shortUrl));
-        if (!isUserUrl) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Url not found");
+
+        if (urlProfile == null || !urlProfile.getUser().getId().equals(user.getId())) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("URL not found or not owned by user");
         }
+
         urlProfileService.deleteByShortUrl(shortUrl);
-        return ResponseEntity
-                .ok()
-                .body("Deleted successfully");
+        return ResponseEntity.ok().body("Deleted successfully");
     }
 
     private String extractOsFromUserAgent(String userAgent) {
