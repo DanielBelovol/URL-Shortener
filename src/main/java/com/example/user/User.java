@@ -1,14 +1,10 @@
 package com.example.user;
 
-import com.example.role.Role;
-import com.example.url_profile.UrlProfile;
+import com.example.role.RoleOld;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Data
 @Entity
@@ -39,5 +35,5 @@ public class User {
 
     @ManyToOne
     @JoinColumn(name = "role_id")
-    private Role role;
+    private RoleOld role;
 }

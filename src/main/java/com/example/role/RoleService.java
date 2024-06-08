@@ -8,7 +8,7 @@ public class RoleService {
     @Autowired
     private RoleRepository roleRepository;
 
-    public Role findRoleByUsername(String username){
+    public RoleOld findRoleByUsername(String username){
         return roleRepository.findByName(username);
     }
 }

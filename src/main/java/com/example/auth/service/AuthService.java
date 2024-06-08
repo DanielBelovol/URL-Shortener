@@ -5,7 +5,7 @@ import com.example.auth.dto.login.LoginResponse;
 import com.example.auth.dto.register.RegisterRequest;
 import com.example.auth.dto.register.RegisterResponse;
 import com.example.auth.jwt.JwtUtil;
-import com.example.role.Role;
+import com.example.role.RoleOld;
 import com.example.role.RoleService;
 import com.example.user.User;
 import com.example.user.UserRepository;
@@ -76,7 +76,7 @@ public class AuthService {
         user.setCreatedAt(LocalDateTime.now());
         user.setActive(true);
         user.setLocked(false);
-        Role userRole = roleService.findRoleByUsername("ROLE_USER");
+        RoleOld userRole = roleService.findRoleByUsername("ROLE_USER");
         user.setRole(userRole);
         userRepository.save(user);
     }

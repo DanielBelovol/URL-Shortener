@@ -1,2 +1,3 @@
-package com.example.role;public class Role {
+package com.example.role;
+public class Role {
 }
