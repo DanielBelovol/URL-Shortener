@@ -2,6 +2,7 @@ package com.example.auth.jwt;
 
 import com.example.auth.security.CustomUserDetailsService;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -62,7 +63,5 @@ public class JwtUtil {
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME)) // 10 hours
                 .signWith(SECRET_KEY)
                 .compact();
-
     }
-
 }

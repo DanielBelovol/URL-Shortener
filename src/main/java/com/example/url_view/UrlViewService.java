@@ -3,6 +3,7 @@ package com.example.url_view;
 import com.example.data.url_profile.UrlProfileResponse;
 import com.example.data.url_view.UrlViewDto;
 import com.example.data.url_view.UrlViewResponse;
+import com.example.exceptions.UserNotFoundException;
 import com.example.url_profile.UrlProfileMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ public class UrlViewService {
         this.urlProfileMapper = urlProfileMapper;
     }
 
-    public UrlViewResponse saveUrlView(UrlViewDto dto, UrlProfileResponse urlProfileResponse){
+    public UrlViewResponse saveUrlView(UrlViewDto dto, UrlProfileResponse urlProfileResponse) throws UserNotFoundException {
         UrlView urlView = urlViewMapper.fromUrlViewDtoToEntity(dto);
 
         urlView.setUrlProfile(urlProfileMapper.fromUrlProfileResponseToEntity(urlProfileResponse));
