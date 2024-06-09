@@ -44,7 +44,7 @@ public class AuthService {
             return RegisterResponse.failed(RegisterResponse.Error.usernameAlreadyExist);
         }
 
-        saveNewUser(request);
+        User newUser = saveNewUser(request);
 
         String authToken = jwtUtil.generateToken(request.getEmail());
 
@@ -68,7 +68,7 @@ public class AuthService {
         return LoginResponse.success(authToken, LOGIN_MESSAGE);
     }
 
-    private void saveNewUser(RegisterRequest request) {
+    private User saveNewUser(RegisterRequest request) {
         User user = new User();
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
@@ -78,7 +78,7 @@ public class AuthService {
         user.setLocked(false);
         Role userRole = roleService.findRoleByUsername("ROLE_USER");
         user.setRole(userRole);
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 
 }

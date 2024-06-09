@@ -17,7 +17,7 @@ public class UrlProfileView {
     private String shortUrl;
     private LocalDateTime createdAt;
     private LocalDateTime validTo;
-    private String username;
+    private Long createdBy;
     private long countOfRedirects;
     private List<UrlViewDto> views = new ArrayList<>();
 }

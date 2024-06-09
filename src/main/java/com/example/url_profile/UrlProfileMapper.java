@@ -47,17 +47,17 @@ public class UrlProfileMapper {
                 urlProfile.getShortUrl(),
                 urlProfile.getCreatedAt(),
                 urlProfile.getValidTo(),
-                urlProfile.getUser(),
+                urlProfile.getUser().getId(),
                 urlProfile.getUrlViews());
     }
-    public UrlProfile fromUrlProfileResponseToEntity(UrlProfileResponse response){
+    public UrlProfile fromUrlProfileResponseToEntity(UrlProfileResponse response) throws UserNotFoundException {
         return new UrlProfile(
                 response.getId(),
                 response.getLongUrl(),
                 response.getShortUrl(),
                 response.getCreatedAt(),
                 response.getValidTo(),
-                response.getUser(),
+                userService.getUserById(response.getCreatedBy()),
                 response.getUrlViews());
     }
 }
