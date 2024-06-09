@@ -16,9 +16,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-// todo
-// create user dto to return not full user
-
 @Service
 public class UrlProfileService {
     private final UrlProfileRepository urlProfileRepository;
@@ -30,19 +27,15 @@ public class UrlProfileService {
         this.urlProfileMapper = urlProfileMapper;
     }
 
-//    @Caching(evict = {
-//            @CacheEvict(value = "UrlProfileService::getAllActiveUrls", allEntries = true),
-//            @CacheEvict(value = "UrlProfileService::getAllUrlsByUserId", allEntries = true)
-//            @CacheEvict(value = "UrlProfileService::getAllUrls", allEntries = true)
-//    })
+    @Caching(evict = {
+            @CacheEvict(value = "UrlProfileService::getAllActiveUrls", allEntries = true),
+            @CacheEvict(value = "UrlProfileService::getAllUrlsByUserId", allEntries = true),
+            @CacheEvict(value = "UrlProfileService::getAllUrls", allEntries = true)
+    })
     public UrlProfileResponse createUrl(UrlProfileDto dto, User user) {
         UrlProfile urlProfile = urlProfileMapper.fromUrlProfileDtoToEntity(dto);
-
         urlProfile.setShortUrl(generateUniqueShortUrl());
         urlProfile.setUser(user);
-
-//        Думаю це зайве
-//        user.getUrls().add(urlProfile);
 
         return urlProfileMapper.fromUrlProfileEntityToResponse(save(urlProfile));
     }
@@ -125,7 +118,7 @@ public class UrlProfileService {
     }
 
     @Cacheable(value = "UrlProfileService::existsByShortUrl", key="#shortUrl")
-    private Boolean existsByShortUrl(String shortUrl){
+    public Boolean existsByShortUrl(String shortUrl){
         return urlProfileRepository.existsByShortUrl(shortUrl);
     }
     private String generateUniqueShortUrl() {
@@ -137,13 +130,16 @@ public class UrlProfileService {
     }
 
     @Cacheable(value = "UrlProfileService::getAllActiveByUserId", key="#userId")
-    private List<UrlProfile> getAllActiveByUserId(Long userId){
+    public List<UrlProfile> getAllActiveByUserId(Long userId){
         return urlProfileRepository.getAllActiveUrlsByUserId(userId);
     }
 
-    private boolean isOwner(Long id, String userEmail) throws UrlNotFoundException {
+    public boolean isOwner(Long id, String userEmail) throws UrlNotFoundException {
         UrlProfile urlProfile = getById(id);
         return urlProfile.getUser().getEmail().equals(userEmail);
     }
-
+    public boolean isOwnerByUrl(String shortUrl, String userEmail) throws UrlNotFoundException {
+        UrlProfile urlProfile = getUrlProfileByShortUrl(shortUrl);
+        return urlProfile.getUser().getEmail().equals(userEmail);
+    }
 }

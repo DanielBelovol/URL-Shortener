@@ -31,7 +31,6 @@ import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -59,11 +58,8 @@ public class UrlShortenerController {
         if (!urlProfileValidationService.isValidURL(urlProfileRequest.getFullUrl())) {
             return ResponseEntity.badRequest().body("Invalid URL");
         }
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-//        String username = userDetails.getUsername();
-        User user = userService.getUserByEmail(principal.getName());
 
+        User user = userService.getUserByEmail(principal.getName());
         LocalDateTime now = LocalDateTime.now();
 
         UrlProfileDto dto = new UrlProfileDto(urlProfileRequest.getFullUrl(), null, now, now.plusMonths(1), user.getId());
@@ -83,7 +79,8 @@ public class UrlShortenerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UrlProfileResponse> getUrlProfile(@PathVariable long id)
+    @PreAuthorize("@urlProfileService.isOwner(#id, principal.username)")
+    public ResponseEntity<UrlProfileResponse> getUrlProfile(@PathVariable long id, Principal principal)
             throws UrlNotFoundException {
         return ResponseEntity
                 .ok()
@@ -155,23 +152,18 @@ public class UrlShortenerController {
         String ipAddress = request.getRemoteAddr();
         String os = extractOsFromUserAgent(userAgent);
         String browser = extractBrowserFromUserAgent(userAgent);
-
-        UrlViewDto dto = new UrlViewDto(ipAddress, os, browser, "");
+        String referer = request.getHeader("referer") != null ? request.getHeader("referer") : "";
+        UrlViewDto dto = new UrlViewDto(ipAddress, os, browser, referer);
         urlViewService.saveUrlView(dto, urlProfileResponse);
 
         return new RedirectView(urlProfileResponse.getLongUrl());
     }
 
     @DeleteMapping("/{shortUrl}")
-    public ResponseEntity<?> deleteByUrl(@PathVariable String shortUrl) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String username = userDetails.getUsername();
-        User user = userService.getUserByUsername(username);
-
+    @PreAuthorize("@urlProfileService.isOwnerByUrl(#shortUrl, principal.username)")
+    public ResponseEntity<?> deleteByUrl(@PathVariable String shortUrl, Principal principal) {
         UrlProfile urlProfile = urlProfileService.getUrlProfileByShortUrl(shortUrl);
-        boolean isUserUrl = user.getUrls().stream().anyMatch(profile -> profile.getShortUrl().equals(shortUrl));
-        if (!isUserUrl) {
+        if (urlProfile == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Url not found");
         }
         urlProfileService.deleteByShortUrl(shortUrl);

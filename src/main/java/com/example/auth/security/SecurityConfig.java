@@ -35,10 +35,9 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/V1/auth/**").permitAll()
-//                        .requestMatchers("/api/v1/urls/redir/**").permitAll()
+                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/v1/urls/redir/**").permitAll()
                         .anyRequest().authenticated()
-//                                .anyRequest().permitAll()
                 )
                 .sessionManagement(ses -> ses.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(new JwtRequestFilter(authenticationManager(), customUserDetailsService, jwtUtil),
