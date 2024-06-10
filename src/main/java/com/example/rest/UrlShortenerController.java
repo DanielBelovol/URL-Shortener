@@ -89,9 +89,6 @@ public class UrlShortenerController {
 
     @GetMapping("")
     public ResponseEntity<List<UrlProfileView>> getAllUrlProfiles(Principal principal) {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-//        String username = userDetails.getUsername();
         User user = userService.getUserByEmail(principal.getName());
         List<UrlProfileResponse> urls = urlProfileService.getAllUrlsByUserId(user.getId());
 
