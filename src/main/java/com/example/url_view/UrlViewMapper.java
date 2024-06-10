@@ -1,7 +1,9 @@
 package com.example.url_view;
 
+import com.example.data.url_profile.UrlProfileDto;
 import com.example.data.url_view.UrlViewDto;
 import com.example.data.url_view.UrlViewResponse;
+import com.example.url_profile.UrlProfile;
 import org.springframework.stereotype.Component;
 
 @Component
