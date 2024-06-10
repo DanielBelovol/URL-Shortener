@@ -7,8 +7,11 @@ services:
       - target: 9990
         published: 9990
     depends_on:
+      - redis
       - url_shortener-db
     environment:
+      - REDIS_HOST=localhost
+      - REDIS_PORT=6379
       - SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:2024/url_shortener
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
@@ -18,3 +21,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+  redis:
+    image: redis
+    container_name: redis
+
