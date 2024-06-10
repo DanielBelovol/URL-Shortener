@@ -1,33 +1,43 @@
 package com.example.url_profile;
 
 import com.example.user.User;
-import com.example.url_profile.UrlProfile;
-import com.example.url_profile.UrlProfileMapper;
 import com.example.data.url_profile.UrlProfileDto;
 import com.example.data.url_profile.UrlProfileResponse;
 import com.example.data.url_profile.UrlProfileRequest;
 import com.example.exceptions.UserNotFoundException;
 import com.example.user.UserService;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
-import static org.junit.jupiter.api.Assertions.*;
 
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
 class UrlProfileMapperTest {
-    @Autowired
+    //    @Autowired
+//    private UserService userService;
+    @Mock
     private UserService userService;
-    UrlProfileMapper urlProfileMapper = new UrlProfileMapper();
+    //    UrlProfileMapper urlProfileMapper = new UrlProfileMapper();
+    @InjectMocks
+    private UrlProfileMapper urlProfileMapper;
 
     @Test
     void fromUrlProfileEntityToDtoTest() {
         LocalDateTime now = LocalDateTime.now();
-        String username = "testUser"; // Username
-        UrlProfile urlProfile = new UrlProfile(1L, "https://www.youtube.com/", "1234abc", now, now.plusMonths(1), username, Collections.emptySet());
+        User user = new User();
+        user.setId(1L);
+        UrlProfile urlProfile = new UrlProfile(1L, "https://www.youtube.com/", "1234abc", now, now.plusMonths(1), user, Collections.emptySet());
 
-        UrlProfileDto expectedDto = new UrlProfileDto("https://www.youtube.com/", "1234abc", now, now.plusMonths(1), username);
+        UrlProfileDto expectedDto = new UrlProfileDto("https://www.youtube.com/", "1234abc", now, now.plusMonths(1), user.getId());
 
         UrlProfileDto actualDto = urlProfileMapper.fromUrlProfileEntityToDto(urlProfile);
 
@@ -35,12 +45,15 @@ class UrlProfileMapperTest {
     }
 
     @Test
-    void fromUrlProfileDtoToEntityTest() {
+    void fromUrlProfileDtoToEntityTest() throws UserNotFoundException {
         LocalDateTime now = LocalDateTime.now();
-        String username = "testUser"; // Username
-        UrlProfileDto dto = new UrlProfileDto("https://www.youtube.com/", "1234abc", now, now.plusMonths(1), username);
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("testUser");
+        when(userService.getUserById(anyLong())).thenReturn(user);
+        UrlProfileDto dto = new UrlProfileDto("https://www.youtube.com/", "1234abc", now, now.plusMonths(1), user.getId());
 
-        UrlProfile expectedUrl = new UrlProfile(null, "https://www.youtube.com/", "1234abc", now, now.plusMonths(1), username, Collections.emptySet());
+        UrlProfile expectedUrl = new UrlProfile(null, "https://www.youtube.com/", "1234abc", now, now.plusMonths(1), user, Collections.emptySet());
 
         UrlProfile actualUrl = urlProfileMapper.fromUrlProfileDtoToEntity(dto);
 
@@ -49,9 +62,13 @@ class UrlProfileMapperTest {
 
     @Test
     void fromUrlProfileRequestToDtoTest() throws UserNotFoundException {
+        User user = new User();
+        user.setId(5L);
+        user.setUsername("testUser");
+        when(userService.getUserById(anyLong())).thenReturn(user);
         UrlProfileRequest urlProfileRequest = new UrlProfileRequest("https://www.youtube.com/", 5L);
         String username = userService.getUserById(urlProfileRequest.getUserId()).getUsername();
-        UrlProfileDto expectedDto = new UrlProfileDto("https://www.youtube.com/", null, null, null, username);
+        UrlProfileDto expectedDto = new UrlProfileDto("https://www.youtube.com/", null, null, null, user.getId());
 
         UrlProfileDto actualDto = urlProfileMapper.fromUrlProfileRequestToDto(urlProfileRequest);
 
@@ -59,25 +76,32 @@ class UrlProfileMapperTest {
     }
 
     @Test
-    void fromUrlProfileEntityToResponseTest() {
+    void fromUrlProfileEntityToResponseTest() throws UserNotFoundException {
         LocalDateTime now = LocalDateTime.now();
-        String username = "testUser"; // Username
-        UrlProfile urlProfile = new UrlProfile(1L, "https://www.youtube.com/", "1234abc", now, now.plusMonths(1), username, Collections.emptySet());
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("testUser");
 
-        UrlProfileResponse expectedResponse = new UrlProfileResponse(1L, "https://www.youtube.com/", "1234abc", now, now.plusMonths(1), username, Collections.emptySet());
+        UrlProfile urlProfile = new UrlProfile(1L, "https://www.youtube.com/", "1234abc", now, now.plusMonths(1), user, Collections.emptySet());
+
+        UrlProfileResponse expectedResponse = new UrlProfileResponse(1L, "https://www.youtube.com/", "1234abc", now, now.plusMonths(1), user.getId(), Collections.emptySet());
 
         UrlProfileResponse actualResponse = urlProfileMapper.fromUrlProfileEntityToResponse(urlProfile);
 
         Assertions.assertEquals(expectedResponse, actualResponse);
     }
 
+    @SneakyThrows
     @Test
     void fromUrlProfileResponseToEntityTest() {
         LocalDateTime now = LocalDateTime.now();
-        String username = "testUser"; // Username
-        UrlProfileResponse urlProfileResponse = new UrlProfileResponse(1L, "https://www.youtube.com/", "1234abc", now, now.plusMonths(1), username, Collections.emptySet());
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("testUser");
+        when(userService.getUserById(anyLong())).thenReturn(user);
+        UrlProfileResponse urlProfileResponse = new UrlProfileResponse(1L, "https://www.youtube.com/", "1234abc", now, now.plusMonths(1), user.getId(), Collections.emptySet());
 
-        UrlProfile expectedUrl = new UrlProfile(1L, "https://www.youtube.com/", "1234abc", now, now.plusMonths(1), username, Collections.emptySet());
+        UrlProfile expectedUrl = new UrlProfile(1L, "https://www.youtube.com/", "1234abc", now, now.plusMonths(1), user, Collections.emptySet());
 
         UrlProfile actualUrl = urlProfileMapper.fromUrlProfileResponseToEntity(urlProfileResponse);
 
