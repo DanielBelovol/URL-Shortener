@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.example.url_profile.UrlProfileServiceTest
+-------------------------------------------------------------------------------
+Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.473 s -- in com.example.url_profile.UrlProfileServiceTest
