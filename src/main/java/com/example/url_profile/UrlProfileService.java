@@ -3,6 +3,7 @@ package com.example.url_profile;
 import com.example.data.url_profile.UrlProfileDto;
 import com.example.data.url_profile.UrlProfileResponse;
 import com.example.exceptions.UrlNotFoundException;
+import com.example.exceptions.UserNotFoundException;
 import com.example.user.User;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class UrlProfileService {
             @CacheEvict(value = "UrlProfileService::getAllUrlsByUserId", allEntries = true),
             @CacheEvict(value = "UrlProfileService::getAllUrls", allEntries = true)
     })
-    public UrlProfileResponse createUrl(UrlProfileDto dto, User user) {
+    public UrlProfileResponse createUrl(UrlProfileDto dto, User user) throws UserNotFoundException {
         UrlProfile urlProfile = urlProfileMapper.fromUrlProfileDtoToEntity(dto);
         urlProfile.setShortUrl(generateUniqueShortUrl());
         urlProfile.setUser(user);

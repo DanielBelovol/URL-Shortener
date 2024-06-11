@@ -23,12 +23,14 @@ public class UrlProfileMapper {
 
         return dto;
     }
-    public UrlProfile fromUrlProfileDtoToEntity(UrlProfileDto dto){
+    public UrlProfile fromUrlProfileDtoToEntity(UrlProfileDto dto) throws UserNotFoundException {
         UrlProfile urlProfile = new UrlProfile();
 
+        urlProfile.setShortUrl(dto.getShortUrl());
         urlProfile.setLongUrl(dto.getLongUrl());
         urlProfile.setCreatedAt(dto.getCreatedAt());
         urlProfile.setValidTo(dto.getValidTo());
+        urlProfile.setUser(userService.getUserById(dto.getUserId()));
 
         return urlProfile;
     }

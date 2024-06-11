@@ -110,7 +110,6 @@ public class AdminUrlShortenerController {
         }
         urlProfileService.deleteByShortUrl(shortUrl);
         log.info("User {} deleted URL.", principal.getName());
-
         return ResponseEntity
                 .ok()
                 .body("Deleted successfully");

@@ -3,6 +3,7 @@ package com.example.url_profile;
 import com.example.data.url_profile.UrlProfileDto;
 import com.example.data.url_profile.UrlProfileResponse;
 import com.example.exceptions.UrlNotFoundException;
+import com.example.exceptions.UserNotFoundException;
 import com.example.user.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,7 +54,7 @@ public class UrlProfileServiceTest {
     }
 
     @Test
-    public void testCreateUrl() {
+    public void testCreateUrl() throws UserNotFoundException {
         when(urlProfileMapper.fromUrlProfileDtoToEntity(urlProfileDto)).thenReturn(urlProfile);
         when(urlProfileRepository.save(urlProfile)).thenReturn(urlProfile);
         when(urlProfileMapper.fromUrlProfileEntityToResponse(urlProfile)).thenReturn(new UrlProfileResponse());
