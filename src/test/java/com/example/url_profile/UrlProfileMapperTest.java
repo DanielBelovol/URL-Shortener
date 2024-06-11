@@ -22,11 +22,8 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UrlProfileMapperTest {
-    //    @Autowired
-//    private UserService userService;
     @Mock
     private UserService userService;
-    //    UrlProfileMapper urlProfileMapper = new UrlProfileMapper();
     @InjectMocks
     private UrlProfileMapper urlProfileMapper;
 

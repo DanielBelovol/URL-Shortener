@@ -66,6 +66,13 @@ public class UrlProfileServiceTest {
     }
 
     @Test
+    public void createUrlWithNotExistingUser() throws UserNotFoundException {
+        when(urlProfileMapper.fromUrlProfileDtoToEntity(urlProfileDto)).thenThrow(new UserNotFoundException(1L));
+
+        assertThrows(UserNotFoundException.class, () -> urlProfileService.createUrl(urlProfileDto, user));
+    }
+
+    @Test
     public void testGetAllActiveUrls() {
         when(urlProfileRepository.getAllActiveUrls()).thenReturn(Arrays.asList(urlProfile));
         when(urlProfileMapper.fromUrlProfileEntityToResponse(urlProfile)).thenReturn(new UrlProfileResponse());
