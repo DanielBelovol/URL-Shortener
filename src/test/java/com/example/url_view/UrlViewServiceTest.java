@@ -16,6 +16,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -90,7 +92,16 @@ class UrlViewServiceTest {
 
     @Test
     void getViewsForUrlTest() {
+        List<UrlView> urlViews = new ArrayList<>();
+        urlViews.add(urlView);
 
+        when(urlViewRepository.findAllByUrlId(1L)).thenReturn(urlViews);
+        when(urlViewMapper.fromUrlViewEntityToResponse(urlView)).thenReturn(new UrlViewResponse(1L, urlProfile, "1.2.3.4", "Windows", "Chrome", "www.google.com"));
+
+        List<UrlViewResponse> expectedList = new ArrayList<>();
+        expectedList.add(new UrlViewResponse(1L, urlProfile, "1.2.3.4", "Windows", "Chrome", "www.google.com"));
+
+        assertIterableEquals(expectedList, urlViewService.getViewsForUrl(1L));
     }
 
     @Test
