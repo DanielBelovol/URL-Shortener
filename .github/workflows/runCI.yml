@@ -2,20 +2,57 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [main]
   pull_request:
-    branches: [ "main" ]
+    branches: [main]
 
 jobs:
-  build:
 
+  build:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_DB: url_shortener
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 2024:5432
 
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 17
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
           java-version: '17'
-      - name: Build with Maven
-        run: mvn clean install
+          distribution: 'adopt '
+
+      - name: Build with Maven (dev)
+        run: mvn clean install -P dev
+
+      - name: Run Tests (dev)
+        run: mvn test -P dev
+
+      - name: Build with Maven (prod)
+        run: mvn clean install -P prod
+
+      - name: Run Tests (prod)
+        run: mvn test -P prod
+
+      - name: Build Docker Image
+        uses: docker-practice/actions-setup-docker@master
+
+      - name: Publish to Docker Hub
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          docker build -t url-shortener .
+          echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+          docker push url-shortener
