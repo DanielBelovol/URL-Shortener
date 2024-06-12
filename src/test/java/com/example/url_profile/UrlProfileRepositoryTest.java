@@ -2,6 +2,7 @@ package com.example.url_profile;
 
 import com.example.role.Role;
 import com.example.role.RoleRepository;
+import com.example.testcontainers.BaseTestWithPostgresContainer;
 import com.example.user.User;
 import com.example.user.UserRepository;
 import org.junit.jupiter.api.Assertions;
@@ -18,7 +19,7 @@ import java.util.List;
 @DataJpaTest
 @ActiveProfiles("default")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class UrlProfileRepositoryTest {
+class UrlProfileRepositoryTest extends BaseTestWithPostgresContainer {
 
     @Autowired
     private UrlProfileRepository urlProfileRepository;
