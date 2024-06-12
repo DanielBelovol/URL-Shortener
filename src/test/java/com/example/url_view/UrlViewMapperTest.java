@@ -2,10 +2,11 @@ package com.example.url_view;
 
 import com.example.data.url_view.UrlViewDto;
 import com.example.data.url_view.UrlViewResponse;
+import com.example.testcontainer.BaseTestWithPostgresContainer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class UrlViewMapperTest {
+class UrlViewMapperTest extends BaseTestWithPostgresContainer {
     UrlViewMapper urlViewMapper = new UrlViewMapper();
 
     @Test

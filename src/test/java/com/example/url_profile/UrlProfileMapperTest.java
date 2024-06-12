@@ -1,5 +1,6 @@
 package com.example.url_profile;
 
+import com.example.testcontainer.BaseTestWithPostgresContainer;
 import com.example.user.User;
 import com.example.data.url_profile.UrlProfileDto;
 import com.example.data.url_profile.UrlProfileResponse;
@@ -13,6 +14,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -21,7 +29,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class UrlProfileMapperTest {
+class UrlProfileMapperTest extends BaseTestWithPostgresContainer {
     @Mock
     private UserService userService;
     @InjectMocks

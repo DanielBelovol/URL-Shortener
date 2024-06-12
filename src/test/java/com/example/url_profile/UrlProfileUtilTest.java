@@ -1,10 +1,11 @@
 package com.example.url_profile;
 
+import com.example.testcontainer.BaseTestWithPostgresContainer;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class UrlProfileUtilTest {
+public class UrlProfileUtilTest extends BaseTestWithPostgresContainer {
 
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 

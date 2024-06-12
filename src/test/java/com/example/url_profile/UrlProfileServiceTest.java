@@ -4,6 +4,7 @@ import com.example.data.url_profile.UrlProfileDto;
 import com.example.data.url_profile.UrlProfileResponse;
 import com.example.exceptions.UrlNotFoundException;
 import com.example.exceptions.UserNotFoundException;
+import com.example.testcontainer.BaseTestWithPostgresContainer;
 import com.example.user.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class UrlProfileServiceTest {
+public class UrlProfileServiceTest extends BaseTestWithPostgresContainer {
 
     @Mock
     private UrlProfileRepository urlProfileRepository;
