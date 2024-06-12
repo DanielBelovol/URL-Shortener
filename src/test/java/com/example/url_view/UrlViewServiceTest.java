@@ -4,6 +4,7 @@ import com.example.data.url_profile.UrlProfileResponse;
 import com.example.data.url_view.UrlViewDto;
 import com.example.data.url_view.UrlViewResponse;
 import com.example.exceptions.UserNotFoundException;
+import com.example.testcontainer.BaseTestWithPostgresContainer;
 import com.example.url_profile.UrlProfile;
 import com.example.url_profile.UrlProfileMapper;
 import com.example.user.User;
@@ -24,7 +25,7 @@ import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
-class UrlViewServiceTest {
+class UrlViewServiceTest extends BaseTestWithPostgresContainer {
 
     @Mock
     private UrlViewRepository urlViewRepository;

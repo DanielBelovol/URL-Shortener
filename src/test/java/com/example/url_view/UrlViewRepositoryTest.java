@@ -2,6 +2,7 @@ package com.example.url_view;
 
 import com.example.role.Role;
 import com.example.role.RoleRepository;
+import com.example.testcontainer.BaseTestWithPostgresContainer;
 import com.example.url_profile.UrlProfile;
 import com.example.url_profile.UrlProfileRepository;
 import com.example.user.User;
@@ -21,7 +22,7 @@ import java.util.List;
 @DataJpaTest
 @ActiveProfiles("default")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class UrlViewRepositoryTest {
+class UrlViewRepositoryTest extends BaseTestWithPostgresContainer {
     @Autowired
     private UrlProfileRepository urlProfileRepository;
     @Autowired
