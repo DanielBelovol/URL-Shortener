@@ -1,0 +1,14 @@
+-------------------------------------------------------------------------------
+Test set: com.example.url_view.UrlViewRepositoryTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 1.819 s <<< FAILURE! -- in com.example.url_view.UrlViewRepositoryTest
+com.example.url_view.UrlViewRepositoryTest -- Time elapsed: 1.819 s <<< ERROR!
+java.lang.IllegalStateException: Configuration error: found multiple declarations of @BootstrapWith for test class [com.example.url_view.UrlViewRepositoryTest]: [@org.springframework.test.context.BootstrapWith(value=org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTestContextBootstrapper.class), @org.springframework.test.context.BootstrapWith(value=org.springframework.boot.test.context.SpringBootTestContextBootstrapper.class)]
+	at org.springframework.test.context.BootstrapUtils.resolveExplicitTestContextBootstrapper(BootstrapUtils.java:194)
+	at org.springframework.test.context.BootstrapUtils.resolveTestContextBootstrapper(BootstrapUtils.java:150)
+	at org.springframework.test.context.BootstrapUtils.resolveTestContextBootstrapper(BootstrapUtils.java:126)
+	at org.springframework.test.context.TestContextManager.<init>(TestContextManager.java:126)
+	at org.springframework.test.context.junit.jupiter.SpringExtension.getTestContextManager(SpringExtension.java:366)
+	at org.springframework.test.context.junit.jupiter.SpringExtension.beforeAll(SpringExtension.java:131)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+

@@ -1,5 +1,6 @@
 package com.example.url_profile;
 
+import com.example.testcontainers.BaseTestWithPostgresContainer;
 import com.example.user.User;
 import com.example.data.url_profile.UrlProfileDto;
 import com.example.data.url_profile.UrlProfileResponse;
@@ -21,7 +22,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class UrlProfileMapperTest {
+class UrlProfileMapperTest extends BaseTestWithPostgresContainer {
     @Mock
     private UserService userService;
     @InjectMocks

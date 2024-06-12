@@ -1,3 +1,4 @@
+com\example\testcontainers\BaseTestWithPostgresContainer.class
 com\example\url_view\UrlViewMapperTest.class
 com\example\url_view\UrlViewRepositoryTest.class
 com\example\url_profile\UrlProfileValidationServiceTest.class
